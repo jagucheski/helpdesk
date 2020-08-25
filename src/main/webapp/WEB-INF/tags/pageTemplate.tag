@@ -12,15 +12,25 @@
 		<c:url value="/resources/css" var="cssPath" />
 		<c:url value="/resources/js" var="jsPath" /> 
 		<c:url value="/resources/imagens" var="imgPath" /> 
+		<c:url value="/resources/fontawesome" var="fontawesomePath" />
+		<c:url value="/resources/dataTable" var="dataTablePath" />
+		<c:url value="/resources/export" var="exportPath" />
 		<link rel="stylesheet" href="${cssPath}/bootstrap.min.css" type="text/css" media="all"/>
 		<link rel="stylesheet" href="${cssPath}/bootstrap-grid.min.css" type="text/css" media="all"/>
 		<link rel="stylesheet" href="${cssPath}/bootstrap-theme.min.css" type="text/css" media="all"/>
+		<link rel="stylesheet" href="${cssPath}/jquery-ui.css" type="text/css" media="all"/>
+		<link rel="stylesheet" href="${fontawesomePath}/css/all.css" type="text/css" media="all"/>
+		<link rel="stylesheet" href="${dataTablePath}/datatables.min.css" type="text/css" media="all"/>
 		<link rel="icon" href="${imgPath}/favicon.ico">
 		<script type="text/javascript" src="${jsPath}/jquery-3.5.1.js"></script>
+		<script type="text/javascript" src="${jsPath}/inputMask.js"></script>
 		<script type="text/javascript" src="${jsPath}/bootstrap.min.js"></script>	
 		<script type="text/javascript" src="${jsPath}/util.js"></script>		
-		<script src="https://kit.fontawesome.com/16323492c4.js" crossorigin="anonymous"></script>
-	</head>
+		<script type="text/javascript" src="${jsPath}/jquery-ui.js"></script>		
+		<script type="text/javascript" src="${dataTablePath}/datatables.min.js"></script>
+		<script type="text/javascript" src="${exportPath}/shieldui-all.min.js"></script>
+		<script type="text/javascript" src="${exportPath}/jszip.min.js"></script>
+  	</head>
 	
 	<body class="${bodyClass}">
 

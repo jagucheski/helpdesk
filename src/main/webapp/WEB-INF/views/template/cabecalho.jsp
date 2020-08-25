@@ -3,49 +3,98 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light py-md-1 ">
-	<a class="navbar-brand" href="${s:mvcUrl('HC#home').build() }" >
-		<i class="fas fa-home" title="HelpDesk"></i> HelpDesk</a>
-	<button class="navbar-toggler" type="button" data-toggle="collapse"
-		data-target="#menu" aria-controls="menu" aria-expanded="false"
-		aria-label="Alterna navegação">
-		<span class="navbar-toggler-icon"></span>
-	</button>
-
-	<div class="collapse navbar-collapse" id="menu">
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item dropdown">
-				<security:authorize access="hasRole('ROLE_ADMIN')"> 
+ <header>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark py-md-1 ">
+		<a class="navbar-brand" href="${s:mvcUrl('HC#home').build() }"  title="HelpDesk">HelpDesk</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#menu" aria-controls="menu" aria-expanded="false"
+			aria-label="Alterna navegação">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+	
+		<div class="collapse navbar-collapse" id="menu">
+			<ul class="navbar-nav mr-auto">
+					<security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_SUP')">
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" 
+								id="navbarDropdown" role="button" 
+								data-toggle="dropdown" aria-haspopup="true"	
+								aria-expanded="false"> Cadastros </a>
+							<div class="dropdown-menu" style="padding: 0;" aria-labelledby="navbarDropdown">
+									<security:authorize access="hasRole('ROLE_ADMIN')">
+										<a class="dropdown-item" href="${s:mvcUrl('OC#operador').build() }"><i class="fas fa-user-cog" title="Operador"></i> Operador</a> 
+									</security:authorize>
+									<a class="dropdown-item" href="${s:mvcUrl('SC#solicitante').build() }"> <i class="fas fa-users" title="Solicitantes"></i> Solicitantes</a>
+									<div class="dropdown-divider"></div>
+									<a class="dropdown-item" href="${s:mvcUrl('SC#setor').build() }"> <i class="far fa-building" title="Setor"></i> Setor</a>
+									<a class="dropdown-item" href="${s:mvcUrl('CC#categoria').build() }"> <i class="fas fa-angle-right" title="Categoria"></i> Categoria</a>
+									<a class="dropdown-item" href="${s:mvcUrl('SCC#subCategoria').build() }"> <i class="fas fa-angle-right" title="Sub-Categoria"></i> Sub-Categoria</a>
+									<a class="dropdown-item" href="${s:mvcUrl('TCC#tipoCategoria').build() }"> <i class="fas fa-angle-right" title="Tipo Categoria"></i> Tipo Categoria</a>									
+							</div>
+						</li>
+					</security:authorize>
+					<security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_SUP')">
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" 
+								id="navbarDropdown" role="button" 
+								data-toggle="dropdown" aria-haspopup="true"	
+								aria-expanded="false"> Gerenciar </a>
+								<div class="dropdown-menu" style="padding: 0;" aria-labelledby="navbarDropdown">
+									<a class="dropdown-item" href="${s:mvcUrl('COC#chamadoOperador').build() }" title="Chamados">
+										<i class="fas fa-tags"></i> Chamados</a>
+								</div>
+						</li>
+					</security:authorize>
+					<security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_SUP')">
+						<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#" 
+									id="navbarDropdown" role="button" 
+									data-toggle="dropdown" aria-haspopup="true"	
+									aria-expanded="false"> Relatórios </a>
+									<div class="dropdown-menu" style="padding: 0;" aria-labelledby="navbarDropdown" title="Chamados">
+										<a class="dropdown-item disabled" href="#"> <i class="fas fa-tags"></i> Chamados</a>
+									</div>
+						</li>
+					</security:authorize>
+					<security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_SUP')">
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" 
+								id="navbarDropdown" role="button" 
+								data-toggle="dropdown" aria-haspopup="true"	
+								aria-expanded="false"> Outros </a>
+								<div class="dropdown-menu" style="padding: 0;" aria-labelledby="navbarDropdown">
+									<security:authorize access="hasRole('ROLE_ADMIN')">     
+										<a class="dropdown-item disabled" href="#"><i class="fas fa-cogs" title="Configuração"></i> Configuração</a>
+									</security:authorize>
+								</div>
+						</li>
+					</security:authorize>
+					<li class="nav-item">
+						<a class="nav-link" href="${s:mvcUrl('CSC#chamadoSolicitante').build() }" role="button" title="Chamado">
+							<i class="fas fa-tag"></i> Chamado</a>
+					</li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" 
 						id="navbarDropdown" role="button" 
 						data-toggle="dropdown" aria-haspopup="true"	
-						aria-expanded="false"> Gerenciar </a>
-					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-							<a  class="dropdown-item" href="${s:mvcUrl('UC#usuario').build() }">
-								<i class="fas fa-users" title="Usuários"></i> Usuários</a> 
-							<div class="dropdown-divider"></div>
-							<a class="dropdown-item" href="#">
-								<i class="fas fa-cogs" title="Configuração"></i> Configuração</a>
+						aria-expanded="false"> 
+						<security:authentication property="principal" var="usuario"/>
+	      	 			<i class="fas fa-user"></i>	 ${usuario.username }
+	      	 		</a>
+					<div class="dropdown-menu" style="padding: 0;" aria-labelledby="navbarDropdown">
+							<a  class="dropdown-item" href="${s:mvcUrl('UC#usuarioAtualizarDados').build() }">
+								<i class="fas fa-pencil-alt" title="Alterar Dados"></i> Atualizar dados</a>
 					</div>
-				</security:authorize>
-			</li>
+				</li>
 			
-			<li class="nav-item">
-				<a class="nav-link disabled" href="#">Desativado</a> 
-			</li>
-		</ul>
-		<ul class="nav navbar-nav navbar-right">
-      	 	<li class="nav-item">
-      	 		<a class="nav-link"	 href="#" title="Usuário">
-      	 			<security:authentication property="principal" var="usuario"/>
-      	 			<i class="fas fa-user"></i>	 ${usuario.username }
-      	 		</a>
-      	 	</li>
-			<li class="nav-item">
-				<a class="nav-link"	href="<c:url value='/logout'/>">
-					<i class="fas fa-sign-out-alt"  title="Sair"></i> Sair</a>					
-			</li>
-		</ul>
-	</div>
-</nav>
+				<li class="nav-item">
+					<a class="nav-link"	href="<c:url value='/logout'/>">
+						<i class="fas fa-sign-out-alt"  title="Sair"></i> Sair</a>					
+				</li>
+			</ul>
+		</div>
+	</nav>
+</header>
 	
