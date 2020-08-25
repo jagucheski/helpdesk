@@ -21,6 +21,7 @@
 		<spring.security.version>4.2.6.RELEASE</spring.security.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<mysql.connector.version>5.1.46</mysql.connector.version>
+		<postgresql.connector.version>9.4-1201-jdbc41</postgresql.connector.version>
 	</properties>
 
 	<dependencies>
@@ -112,6 +113,11 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${mysql.connector.version}</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.postgresql</groupId>
+		    <artifactId>postgresql</artifactId>
+			<version>${postgresql.connector.version}</version>
+		</dependency>
 
 		<!-- dependencias da api de validação -->
 		<dependency>
@@ -160,6 +166,13 @@
 			<artifactId>mail</artifactId>
 			<version>1.4.7</version>
 		</dependency>
+		
+		 <!-- Jackson API -->
+	   <dependency>
+	     <groupId>com.fasterxml.jackson.core</groupId>
+	     <artifactId>jackson-databind</artifactId>
+	     <version>2.8.7</version>
+	   </dependency>
 
 		<!-- dependencias de teste -->
 		<dependency>

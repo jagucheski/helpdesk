@@ -8,6 +8,8 @@ import org.springframework.format.datetime.DateFormatter;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
@@ -17,7 +19,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @EnableWebMvc
-//@ComponentScan(basePackageClasses= {HomeController.class, ProdutoDAO.class, FileSaver.class, CarrinhoCompras.class})
 @ComponentScan (basePackages = {"br.gov.rs.parobe.helpdesk.controller","br.gov.rs.parobe.helpdesk.dao","br.gov.rs.parobe.helpdesk.model"})
 public class AppWebConfiguration extends WebMvcConfigurerAdapter {
 	
@@ -44,12 +45,10 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter {
 	
 	@Bean
 	public FormattingConversionService mvcConversionService() {
-		DefaultFormattingConversionService conversionService = 
-				new DefaultFormattingConversionService();
+		DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
 		DateFormatterRegistrar registrar = new DateFormatterRegistrar();
 		registrar.setFormatter(new DateFormatter("dd/MM/yyyy"));
-		registrar.registerFormatters(conversionService);
-		
+		registrar.registerFormatters(conversionService);		
 		return conversionService;
 	}
 	
@@ -67,5 +66,18 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter {
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
     }
+    
+	@Bean
+	public OpenEntityManagerInViewInterceptor getOpenEntityManagerInViewInterceptor() {
+		return new OpenEntityManagerInViewInterceptor();
+	}	
+	
+	@Bean
+	public LocalValidatorFactoryBean getValidator() {
+	    LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
+	    bean.setValidationMessageSource(messageSource());
+	    return bean;
+	}
+   
 }
 	
