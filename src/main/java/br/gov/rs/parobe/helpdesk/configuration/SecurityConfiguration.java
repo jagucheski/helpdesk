@@ -31,7 +31,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //			.antMatchers("/pagamento/**").permitAll()	
 			.antMatchers("/").permitAll()
 			.antMatchers("/home").hasRole("USER")
+			.antMatchers("/operador").hasRole("ADMIN")
+			.antMatchers("/operador/*").hasRole("ADMIN")
+			.antMatchers("/operador/operadorEditarPerfil").hasRole("ADMIN")
+			
 			.antMatchers("/usuario").hasRole("ADMIN")
+			.antMatchers("/usuario/*").hasRole("ADMIN")
+			.antMatchers("/usuario/usuarioEditarPerfil").hasRole("ADMIN")
+
+			.antMatchers("/solicitante").hasRole("SUP")
+			.antMatchers("/solicitante/*").hasRole("SUP")
+			
+			.antMatchers("/usuarioAlteraDados").hasRole("USER")
+			.antMatchers("/atualizarSenhaUsuario").hasRole("USER")
 			.anyRequest().authenticated()
 			.and()
 				.formLogin().loginPage("/login").defaultSuccessUrl("/home").permitAll()

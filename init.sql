@@ -7,6 +7,7 @@ CREATE TABLE public.usuario
     senha character varying(255) COLLATE pg_catalog."default",
     telefone character varying(30) COLLATE pg_catalog."default",
     ramal character varying(20) COLLATE pg_catalog."default",
+    alterar_senha BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT usuario_pk PRIMARY KEY (email)
 )
 WITH (
@@ -22,6 +23,7 @@ ALTER TABLE public.usuario
 CREATE TABLE public.role
 (
     nome character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    label character varying(255) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT role_pk PRIMARY KEY (nome)
 )
 WITH (
@@ -55,16 +57,19 @@ TABLESPACE pg_default;
 ALTER TABLE public.usuario_role
     OWNER to postgres;
     
-    
-insert into ROLE values ('ROLE_ADMIN');
-insert into ROLE values ('ROLE_USER');
+insert into ROLE values ('ROLE_ADMIN','Administrador');
+insert into ROLE values ('ROLE_USER','Usuário');
+insert into ROLE values ('ROLE_SUP','Suporte');
 
-insert into USUARIO values ('admin@parobe.rs.gov.br','Admin','$2a$10$Tf/PkBfiWUjjvpiKVRB2Ne56Krj/VbHEx0q.rWKfPPgbFrooaZoqm','35438600','247');
-insert into USUARIO values ('maicon@parobe.rs.gov.br','Maicon','$2a$10$Tf/PkBfiWUjjvpiKVRB2Ne56Krj/VbHEx0q.rWKfPPgbFrooaZoqm','35438600','247');
-insert into USUARIO values ('ti@parobe.rs.gov.br','TI','$2a$10$Tf/PkBfiWUjjvpiKVRB2Ne56Krj/VbHEx0q.rWKfPPgbFrooaZoqm','','');
+insert into USUARIO values ('admin@helpdesk.parobe.rs.gov.br','Super Admin','$2a$10$Tf/PkBfiWUjjvpiKVRB2Ne56Krj/VbHEx0q.rWKfPPgbFrooaZoqm','','',FALSE);
+insert into USUARIO values ('suporte.ti@parobe.rs.gov.br','Suporte TI','$2a$10$Tf/PkBfiWUjjvpiKVRB2Ne56Krj/VbHEx0q.rWKfPPgbFrooaZoqm','35438600','247',FALSE);
+insert into USUARIO values ('usuario@parobe.rs.gov.br','Usuario','$2a$10$Tf/PkBfiWUjjvpiKVRB2Ne56Krj/VbHEx0q.rWKfPPgbFrooaZoqm','35438600','247',FALSE);
 
-insert into USUARIO_ROLE values ('admin@parobe.rs.gov.br','ROLE_ADMIN');
-insert into USUARIO_ROLE values ('admin@parobe.rs.gov.br','ROLE_USER');
-insert into USUARIO_ROLE values ('ti@parobe.rs.gov.br','ROLE_USER');
-insert into USUARIO_ROLE values ('maicon@parobe.rs.gov.br','ROLE_USER');
+insert into USUARIO_ROLE values ('admin@helpdesk.parobe.rs.gov.br','ROLE_ADMIN');
+insert into USUARIO_ROLE values ('admin@helpdesk.parobe.rs.gov.br','ROLE_SUP');
+insert into USUARIO_ROLE values ('admin@helpdesk.parobe.rs.gov.br','ROLE_USER');
 
+insert into USUARIO_ROLE values ('suporte.ti@parobe.rs.gov.br','ROLE_SUP');
+insert into USUARIO_ROLE values ('suporte.ti@parobe.rs.gov.br','ROLE_USER');
+
+insert into USUARIO_ROLE values ('usuario@parobe.rs.gov.br','ROLE_USER');

@@ -8,10 +8,10 @@
 
 <tags:pageTemplate bodyClass="background-color: #f5f5f5;">
 
-	<div class="jumbotron" style="min-height: 400px !important;">
+	<div class="jumbotron" style="background-color: #f5f5f5;min-height: 580px !important;">
 		<div class="container">
 			<h2 class="display-3">Seja bem-vindo!</h2>
-			<p>Esta é a pagina do Departamento de TI.<br/>
+			<p>Esta é a página do Departamento de TI.<br/>
 			Aqui você tem acesso a documentos, manuais, formulários de solicitação, perguntas frequentes e mais.<br/>
 			Além disso é possível acessar o sistema de abertura de chamados.</p>				
 		</div>
@@ -23,7 +23,7 @@
 				<h3>Contato</h3>
 				Telefone:<br/> 
 				<ul>
-					<li>(51) 3543.8600 Ramal: 212 ou </li>
+					<li>(51) 3543.8600 Ramal: 212 ou 247</li>
 				</ul>
 				E-mail:<br/>
 				<ul> 

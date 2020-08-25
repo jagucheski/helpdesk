@@ -1,7 +1,6 @@
 package br.gov.rs.parobe.helpdesk.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -9,84 +8,111 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import br.gov.rs.parobe.helpdesk.dao.RoleDAO;
 import br.gov.rs.parobe.helpdesk.dao.UsuarioDAO;
 import br.gov.rs.parobe.helpdesk.model.Usuario;
 import br.gov.rs.parobe.helpdesk.model.UsuarioJsonResponse;
 
 @Controller
-@RequestMapping("/usuario")
 public class UsuarioController {
 
 	@Autowired
 	UsuarioDAO usuarioDAO;
 
-	@RequestMapping(method = RequestMethod.GET)
-	public ModelAndView usuario() {
-		List<Usuario> usuarios = usuarioDAO.getUsuarios();
-		ModelAndView modelAndView = new ModelAndView("usuario");
-		modelAndView.addObject("usuarios", usuarios);
+	@Autowired
+	RoleDAO roleDAO;
+
+	/**
+	 *  Acesso a tela de atualização de dados pelo usuário
+	 * 
+	 *  Permissão de acesso: USER, ADMIN
+	 **/
+	@RequestMapping(value="/usuarioAtualizarDados" , method = RequestMethod.GET)
+	public ModelAndView usuarioAtualizarDados() {
+		ModelAndView modelAndView = new ModelAndView("usuarios/usuarioAtualizarDados");
+		Usuario usuario =  (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		modelAndView.addObject("usuario", (Usuario) usuarioDAO.loadUserByUsername(usuario.getEmail()));
 		return modelAndView;
 	}
-
-	@Transactional
-	@RequestMapping("/deletar")
-	public ModelAndView deletar(String email) {
-		Usuario usuario = usuarioDAO.loadUserByUsername(email);
-		usuarioDAO.deletar(usuario);
-		return new ModelAndView("redirect:/usuario");
+	
+	/**
+	 *  Acesso a tela de atualização de senha
+	 * 
+	 *  Permissão de acesso: USER  
+	 **/
+	@RequestMapping(value="/atualizarSenhaUsuario" , method = RequestMethod.GET)
+	public ModelAndView atualizarSenhaUsuario() {
+		ModelAndView modelAndView = new ModelAndView("usuarios/usuarioAtualizarSenha");
+		Usuario usuario =  (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		modelAndView.addObject("usuario", (Usuario) usuarioDAO.loadUserByUsername(usuario.getEmail()));
+		return modelAndView;
 	}
-
+	
+	/**
+	 * Atualiza nova senha do usuário alterada pelo próprio usuário quando o ADMIN seta como alteração obrigatória no cadastro do usuário.
+	 * Acessada através dp mapping /usuarioAlteraSenha
+	 **/
 	@Transactional
-	@PostMapping(value="/adicionar", produces = { MediaType.APPLICATION_JSON_VALUE })
+	@PostMapping(value="/atualizarSenha")
 	@ResponseBody
-	public UsuarioJsonResponse adicionar(Model model,
-										@ModelAttribute @Valid Usuario usuario, 
-										BindingResult result,
-										RedirectAttributes redirectAttributes) {
-
+	public UsuarioJsonResponse atualizarSenha(Usuario usuarioAlt) {
+		
 		UsuarioJsonResponse response = new UsuarioJsonResponse();
 		
-		//Get error message
-		if (result.hasErrors()) {
-	         Map<String, String> errors = result.getFieldErrors().stream()
-	         .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));	         
+		if (!usuarioAlt.validaSenha()) {
+			Map<String, String> errors = new HashMap<String, String>();
+			errors.put("senha", "A senha deve conter no mínimo 6 caracteres");
 	         response.setValidated(false);
 	         response.setErrorMessages(errors);
-		} else if (!usuarioDAO.existUserName(usuario.getEmail())) {	
-			usuarioDAO.gravar(usuario);
+		} else {	
+			Usuario usuarioBase = usuarioDAO.loadUserByUsername(usuarioAlt.getEmail());
+			usuarioAlt.passwordEncoder();
+			usuarioBase.setSenha(usuarioAlt.getSenha());
+			usuarioBase.setAlterarSenha(false);
+			usuarioDAO.gravar(usuarioBase);
 			response.setValidated(true);
-		    response.setUsuario(usuario);
-		    response.setMessage("Usuário cadastrado com sucesso!");
-		}else {
-			 response.setValidated(false);
-			 Map<String, String> errors = new HashMap<String, String>();
-			 errors.put("email", "Email já cadastrado!");
-			 response.setUsuario(usuario);
-			 response.setErrorMessages(errors);
+		    response.setMessage("Senha alterada com sucesso!  Efetue login novamente.");
 		}
 		return response;
-	}
+	}	
+	
+	/**
+	 * Atualiza os dados do usuário quando o próprio usuário altera seus dados através do mapping /usuarioAtualizarDados 
+	 * 
+	 *  Permissão de acesso:  USER
+	 **/
+	@Transactional
+	@PostMapping(value="/atualizarDadosUsuario", produces = { MediaType.APPLICATION_JSON_VALUE })
+	@ResponseBody
+	public UsuarioJsonResponse atualizarDadosUsuario(@ModelAttribute @Valid Usuario usuarioAlt, BindingResult result) {
 		
-	@RequestMapping(value="/pesquisar" , method = RequestMethod.POST)
-	public ModelAndView pesquisar(@RequestParam(value="nomeFind", required=false) String nome, 
-								@RequestParam(value="emailFind", required=false) String email, 
-								@RequestParam(value="perfilFind", required=false) String perfil, Model model) {
-		List<Usuario> usuarios = usuarioDAO.findByUsuario(nome, email, perfil);
-		model.addAttribute("usuarios", usuarios);
-		return new ModelAndView("usuario");
-	}
+		UsuarioJsonResponse response = new UsuarioJsonResponse();
+		
+		if (result.hasErrors()) {
+			Map<String, String> errors = result.getFieldErrors().stream()
+					.collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));	         
+			response.setValidated(false);
+			response.setErrorMessages(errors);
+		} else {	
+			Usuario usuario = usuarioDAO.loadUserByUsername(usuarioAlt.getEmail());
+			usuario.atualizaDados(usuarioAlt);
+			usuarioDAO.gravar(usuario);
+			response.setValidated(true);
+			response.setMessage("Dados alterados com sucesso!");
+		}
+		return response;
+	}	
+	
 }
