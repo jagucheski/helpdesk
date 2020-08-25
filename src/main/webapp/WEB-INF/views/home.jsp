@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 
 
 <!DOCTYPE html>
@@ -11,39 +12,55 @@
 	<meta charset="UTF-8">
 	<title>HelpDesk - Gerenciamento de Chamados</title>
 	<c:url value="/resources/css" var="cssPath" />
-	<c:url value="/resources/js" var="jsPath" />
+	<c:url value="/resources/js" var="jsPath" /> 
+	<c:url value="/resources/imagens" var="imgPath" /> 
 	<link rel="stylesheet" href="${cssPath}/bootstrap.min.css" />
 	<link rel="stylesheet" href="${cssPath}/bootstrap-theme.min.css" />
+	<link rel="icon" href="${imgPath}/favicon.ico">
 	<script src="${jsPath}/jquery-3.5.1.js"></script>
 	<script src="${jsPath}/bootstrap.min.js"></script>
 	
 </head>
-<body>
+<body style="background-color: #f5f5f5;">
 
-	<nav class="navbar navbar-inverse">
+	<nav class="navbar navbar-inverse navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="${s:mvcUrl('HC#index').build() }">HelpDesk</a>
+				<a class="navbar-brand" href="${s:mvcUrl('HC#home').build() }">
+				<span class="glyphicon glyphicon-home"></span> 	HelpDesk</a>
 			</div>
-			<ul class="nav navbar-nav">
-				<li class="dropdown"><a class="dropdown-toggle"
-					data-toggle="dropdown" href="#">Page 1 <span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="#">Page 1-1</a></li>
-						<li><a href="#">Page 1-2</a></li>
-						<li><a href="#">Page 1-3</a></li>
-					</ul></li>
-				<li><a href="#">Page 2</a></li>
-			</ul>
+		
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#"><span class="glyphicon glyphicon-log-in"></span>
-						Login</a></li>
-			</ul>
+				<li>
+					<a href="<c:url value="/logout" />">
+					<span class="glyphicon glyphicon-log-out"></span> Sair</a>
+				</li>
+<!-- 	      	 	<li class="nav-item"> -->
+<!-- 	      	 		<a href="#"> -->
+<%-- 	      	 			<security:authentication property="principal" var="usuario" /> --%>
+<%-- 	      	 			${usuario.username } --%>
+<!-- 	      	 		</a> -->
+<!-- 	      	 	</li> -->
+	      	</ul>			
 		</div>
 	</nav>
 
-
-
+	<nav class="navbar ">
+		<ul class="nav flex-column">
+		  <li class="nav-item">
+		    <a class="nav-link active" href="#">Active</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" href="#">Link</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" href="#">Link</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+		  </li>
+		</ul>
+	</nav>
 
 		<div class="jumbotron" style="min-height: 400px !important;">
 			<div class="container">
@@ -87,14 +104,7 @@
 			</div>
 			<hr>
 		</div>
-		<!-- /container -->
-
-
-
-	<footer class="container">
-		<p>&copy; Prefeitura Municipal de Parobe - 2020</p>
-	</footer>
-
+	
 
 </body>
 </html>
