@@ -1,5 +1,6 @@
 package br.gov.rs.parobe.helpdesk.configuration;
 
+import java.net.URISyntaxException;
 import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class JPAConfiguration {
 
+	
 	@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, 
 			Properties properties) {
@@ -40,13 +42,13 @@ public class JPAConfiguration {
 	}
 	
 	@Bean
-	private DriverManagerDataSource dataSouce() {
+	private DriverManagerDataSource dataSouce() throws URISyntaxException {
 
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
+		dataSource.setDriverClassName("org.postgresql.Driver");
 		dataSource.setUsername("postgres");
 		dataSource.setPassword("p0stgr3s!");
 		dataSource.setUrl("jdbc:postgresql://localhost:5432/helpdesk");
-		dataSource.setDriverClassName("org.postgresql.Driver");
 		return dataSource;
 	}
 
