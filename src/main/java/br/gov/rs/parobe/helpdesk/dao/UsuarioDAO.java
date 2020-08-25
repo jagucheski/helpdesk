@@ -8,6 +8,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -16,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
 
+import br.gov.rs.parobe.helpdesk.model.Role;
 import br.gov.rs.parobe.helpdesk.model.Usuario;
 
 @Repository
@@ -25,16 +28,27 @@ public class UsuarioDAO implements UserDetailsService {
 	private EntityManager manager;
 
 	public List<Usuario> getUsuarios() {
-		return manager.createQuery("from Usuario", Usuario.class).getResultList();
+		return manager.createQuery("select distinct u from Usuario u join fetch u.roles", Usuario.class).getResultList();
 	}
 	
+	@Override
 	public Usuario loadUserByUsername(String email) {
-		List<Usuario> usuarios = manager.createQuery("select u from Usuario u where email = :email", Usuario.class)
+		List<Usuario> usuarios = manager.createQuery("select distinct u from Usuario u join fetch u.roles where email = :email", Usuario.class)
 				.setParameter("email", email).getResultList();
 		if (usuarios.isEmpty()) {
 			throw new UsernameNotFoundException("Usuário " + email + " não foi encontrado");
 		}
 		return usuarios.get(0);
+	}
+	
+	public Usuario getByEmail(String email) {
+		Usuario usuario = manager.createQuery("select distinct u from Usuario u join fetch u.roles where u.email LIKE :email", Usuario.class)
+				.setParameter("email", email + "%").getSingleResult();
+
+		if (usuario == null) {
+			throw new UsernameNotFoundException("Usuário " + email + " não foi encontrado");
+		}
+		return usuario;
 	}
 
 	public boolean existUserName(String email) {
@@ -49,17 +63,19 @@ public class UsuarioDAO implements UserDetailsService {
 		manager.remove(usuario);
 	}
 	
-	//TODO inner featch para trazer roles no mesmo select
 	public List<Usuario> findByUsuario(String nome, String email, String perfil ) {
 		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
 		CriteriaQuery<Usuario> query = criteriaBuilder.createQuery(Usuario.class);
 		Root<Usuario> root = query.from(Usuario.class);
-
+		query.distinct(true);
+		root.fetch("roles", JoinType.LEFT);
+		
+		Join<Usuario, Role> join = root.join("roles");
+		
 		Path<String> nomePath = root.<String> get("nome");
 		Path<String> emailPath = root.<String> get("email");
-//		Path<String> perfilPath = root.<String> get("perfil");
+		Path<String> campoRoleId = join.get("nome");
 		
-
 		List<Predicate> predicates = new ArrayList<Predicate>();
 
 		if (!nome.isEmpty()) {
@@ -72,10 +88,10 @@ public class UsuarioDAO implements UserDetailsService {
 			predicates.add(emailIgual);
 		}
 
-//		if (!perfil.isEmpty()) {
-//			Predicate perfilIgual = criteriaBuilder.like(criteriaBuilder.lower(perfilPath), "%" + perfil.toLowerCase() + "%");
-//			predicates.add(perfilIgual);
-//		}
+		if (!perfil.isEmpty()) {
+			Predicate perfilIgual = criteriaBuilder.isTrue(campoRoleId.in(perfil));
+			predicates.add(perfilIgual);
+		}
 
 		query.where((Predicate[]) predicates.toArray(new Predicate[0]));
 
@@ -83,7 +99,6 @@ public class UsuarioDAO implements UserDetailsService {
 		typedQuery.setHint("org.hibernate.cacheable", "true");
 
 		return typedQuery.getResultList();
-		
 		
 	}
 
