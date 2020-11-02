@@ -12,4 +12,5 @@ Manage and track service calls from IT support with exchange between operator an
 - Spring Security;
 - Hibernate;
 - Postgresql;
+- Tomcat;
 - Jquery.
