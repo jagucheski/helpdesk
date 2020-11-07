@@ -14,3 +14,7 @@ Manage and track service calls from IT support with exchange between operator an
 - Postgresql;
 - Tomcat;
 - Jquery.
+
+## ER Diagram
+
+<img src="https://github.com/jagucheski/helpdesk/blob/master/src/main/webapp/resources/imagens/ERDiagram.jpg?sanitize=true">
